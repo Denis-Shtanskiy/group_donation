@@ -1,0 +1,54 @@
+version: '3.3'
+
+volumes:
+  pg_data:
+  static:
+  media:
+  service:
+
+services:
+  db:
+    image: postgres:13.10
+    env_file: ../group_donations/.env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ../group_donations
+      dockerfile: Dockerfile
+    env_file:
+      - ../group_donations/.env
+    depends_on:
+      - db
+    volumes:
+      - static:/app/static/
+      - media:/app/media/
+
+  nginx:
+    image: nginx:1.22.1
+    ports:
+      - 8000:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - static:/static/
+      - media:/media/
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:alpine
+    restart: on-failure
+    ports:
+      - 6379:6379
+
+  celery:
+    build: ../group_donations
+    command: celery -A group_donations worker --loglevel=info
+    env_file:
+      - ../group_donations/.env
+    volumes:
+      - ./service:/service
+    depends_on:
+      - redis
+      - db
