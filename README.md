@@ -21,7 +21,7 @@ _Локальная настройка и запуск проекта_
 
 Клонировать репозиторий к себе на компьютер и перейти в директорию с проектом:
 ```bash
-git clone https://github.com/denis-shtanskiy/foodgram-project-react.git
+git clone https://github.com/Denis-Shtanskiy/group_donation.git
 cd group_donation
 ```
 Для проекта создать и активировать виртуальное окружение, установить зависимости:
